@@ -30,6 +30,7 @@
  */
 
 import { useState, useEffect } from "react";
+import Loader from "./Loader";
 export default function Main() {
   const [meme, setMeme] = useState({
     topText: "One does not simply",
@@ -38,6 +39,7 @@ export default function Main() {
   });
 
   const [allMemes, setAllMemes] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     async function getMeme() {
@@ -65,12 +67,18 @@ export default function Main() {
   function clickHandler() {
     if (!allMemes.length) return;
 
+    setLoader(true);
+
     const randomInt = Math.floor(Math.random() * allMemes.length);
-    const imgUrl = allMemes[randomInt].url;
-    setMeme((prevMemes) => ({
-      ...prevMemes,
-      imageUrl: imgUrl,
-    }));
+    const randomMeme = allMemes[randomInt];
+
+    setTimeout(() => {
+      setMeme((prev) => ({
+        ...prev,
+        imageUrl: randomMeme.url,
+      }));
+      setLoader(false);
+    }, 1500);
   }
 
   return (
@@ -97,13 +105,16 @@ export default function Main() {
             value={meme.bottomText}
           />
         </label>
-        <button onClick={clickHandler}>Get a new meme image ⚡</button>
+        <button type="button" onClick={clickHandler}>
+          Get a new meme image ⚡
+        </button>
       </div>
       <div className="meme">
         <img src={meme.imageUrl} />
         <span className="top">{meme.topText}</span>
         <span className="bottom">{meme.bottomText}</span>
       </div>
+      {loader && <Loader />}
     </main>
   );
 }
